@@ -61,7 +61,9 @@ private:
 	Text quit;
 	Text title;
 	Text turn;
-	Text current;	
+	Text current;
+	Text winner;
+	std::string moveCount;
 
 	// Private Functions
 	void initVariables();
