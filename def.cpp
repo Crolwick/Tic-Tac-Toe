@@ -223,12 +223,6 @@ void Game::gamePollEvents()
 				this->game->close();
 			if (this->ev.key.code == Keyboard::U)
 				std::cout << "Mouse pos: " << Mouse::getPosition(*this->game).x << " " << Mouse::getPosition(*this->game).y << "\n";
-			if (this->ev.key.code == Keyboard::I)
-			{
-				this->board[1][0] = 1;
-				this->board[1][1] = 1;
-				this->board[1][2] = 1;
-			}
 		}
 		break;
 		}
@@ -325,10 +319,13 @@ void Game::updateBoard()
 	{
 		this->checkWin();
 	}
-	if (Mouse::isButtonPressed(Mouse::Left))
+	for (int i = 0; i < 10; i++)
 	{
-		
-		for (int i = 0; i < 10; i++)
+		if (isWin == true)
+		{
+			break;
+		}
+		if (Mouse::isButtonPressed(Mouse::Left))
 		{
 			if (this->spot[i].getGlobalBounds().contains(this->game->mapPixelToCoords(Mouse::getPosition(*this->game))))
 			{
@@ -374,13 +371,6 @@ void Game::updateBoard()
 					{
 						board[y][x] = 1;
 					}
-					for (int i = 0; i < 3; i++)
-					{
-						for (int j = 0; j < 3; j++)
-						{
-							std::cout << board[i][j] << ":" << i << ":" << j << std::endl;
-						}
-					}
 				}
 				else
 				{
@@ -414,13 +404,6 @@ void Game::updateBoard()
 					{
 						board[y][x] = 2;
 					}
-					for (int i = 0; i < 3; i++)
-					{
-						for (int j = 0; j < 3; j++)
-						{
-							std::cout << board[i][j] << ":" << i << ":" << j << std::endl;
-						}
-					}
 				}
 				this->spot[i].setPosition(Vector2f(-100.0f, -100.0f));
 				break;
@@ -429,10 +412,40 @@ void Game::updateBoard()
 	}
 
 	// Turn
-	this->turn.setPosition(Vector2f(130.0f, 60.0f));
+	switch (this->moves)
+	{
+	case 0:
+			this->moveCount = "Turn One";
+			break;
+	case 1:
+		this->moveCount = "Turn Two";
+			break;
+	case 2:
+		this->moveCount = "Turn Three";
+		break;
+	case 3:
+		this->moveCount = "Turn Four";
+		break;
+	case 4:
+		this->moveCount = "Turn Five";
+		break;
+	case 5:
+		this->moveCount = "Turn Six";
+		break;
+	case 6:
+		this->moveCount = "Turn Seven";
+		break;
+	case 7:
+		this->moveCount = "Turn Eight";
+		break;
+	case 8:
+		this->moveCount = "Turn Nine";
+		break;
+	}
+	this->turn.setPosition(Vector2f(80.0f, 650.0f));
 	this->turn.setFont(font);
-	this->turn.setString(std::to_string(this->moves));
-	this->turn.setCharacterSize(90);
+	this->turn.setString(moveCount);
+	this->turn.setCharacterSize(50);
 	this->turn.setFillColor(Color::Yellow);
 	this->turn.setStyle(Text::Bold | Text::Underlined);
 	this->turn.setOutlineThickness(5);
@@ -450,7 +463,7 @@ void Game::checkWin()
 			isWin = true;
 			break;
 		}
-		if (board[0][i] != 0 && board[0][i] == board[1][i] && board[1][i] == board[i][2])
+		if (board[0][i] != 0 && board[0][i] == board[1][i] && board[1][i] == board[2][i])
 		{
 			result = board[0][i];
 			isWin = true;
@@ -476,30 +489,38 @@ void Game::checkWin()
 	{
 		if (result == 1)
 		{
-			std::cout << "Cross Wins!" << std::endl;
+				this->winner.setPosition(Vector2f(80.0f, 740.0f));
+				this->winner.setFont(font);
+				this->winner.setString("Cross Wins!");
+				this->winner.setCharacterSize(50);
+				this->winner.setFillColor(Color::Yellow);
+				this->winner.setStyle(Text::Bold | Text::Underlined);
+				this->winner.setOutlineThickness(5);
+				this->winner.setOutlineColor(Color(100, 100, 100, 200));
+			
 		}
 		if (result == 2)
 		{
-			std::cout << "Cricle Wins!" << std::endl;
-		}
-		for (int i = 0; i < 3; i++)
-		{
-			for (int j = 0; j < 3; j++)
-			{
-				std::cout << board[i][j] << ":" << i << ":" << j << std::endl;
-			}
+			this->winner.setPosition(Vector2f(80.0f, 740.0f));
+			this->winner.setFont(font);
+			this->winner.setString("Circle Wins!");
+			this->winner.setCharacterSize(50);
+			this->winner.setFillColor(Color::Yellow);
+			this->winner.setStyle(Text::Bold | Text::Underlined);
+			this->winner.setOutlineThickness(5);
+			this->winner.setOutlineColor(Color(100, 100, 100, 200));
 		}
 	}
 	if (moves == 9 && this->isWin != true)
 	{
-		std::cout << "Draw!" << std::endl;
-		for (int i = 0; i < 3; i++)
-		{
-			for (int j = 0; j < 3; j++)
-			{
-				std::cout << board[i][j] << ":" << i << ":" << j << std::endl;
-			}
-		}
+		this->winner.setPosition(Vector2f(80.0f, 740.0f));
+		this->winner.setFont(font);
+		this->winner.setString("Draw!");
+		this->winner.setCharacterSize(50);
+		this->winner.setFillColor(Color::Yellow);
+		this->winner.setStyle(Text::Bold | Text::Underlined);
+		this->winner.setOutlineThickness(5);
+		this->winner.setOutlineColor(Color(100, 100, 100, 200));
 	}
 }
 
@@ -542,6 +563,7 @@ void Game::renderMainMenu()
 void Game::renderBoard()
 {
 	this->game->draw(turn);
+	this->game->draw(winner);
 	// Board / Avaliable Spots
 	for (int i = 0; i < 3; i++)
 	{
